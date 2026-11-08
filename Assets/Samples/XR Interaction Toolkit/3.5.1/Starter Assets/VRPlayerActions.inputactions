@@ -1,0 +1,36 @@
+{
+    "version": 1,
+    "name": "VRPlayerActions",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "0e5c8d97-419d-4116-94cb-4a12c96dc9b5",
+            "actions": [
+                {
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "24ee2fb3-74e2-4777-90fe-5f2bd64ad159",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b2a64bc0-5d14-4f74-a86e-3782a7e04950",
+                    "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
