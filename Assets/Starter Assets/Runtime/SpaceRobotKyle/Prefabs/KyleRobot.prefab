@@ -2029,7 +2029,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TransformPoseFollower
   source: {fileID: 0}
   localPositionOffset: {x: 0, y: 0, z: 0}
-  localRotationOffset: {x: 0, y: 0, z: 0}
+  localRotationOffset: {x: -0.5616455, y: 83.9532, z: 5.1601124}
 --- !u!1 &5038403914984938651
 GameObject:
   m_ObjectHideFlags: 0
@@ -3083,7 +3083,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TransformPoseFollower
   source: {fileID: 0}
   localPositionOffset: {x: 0, y: 0, z: 0}
-  localRotationOffset: {x: 0, y: 0, z: 0}
+  localRotationOffset: {x: 0.5614853, y: 96.046585, z: -174.84013}
 --- !u!1 &9053250293666259648
 GameObject:
   m_ObjectHideFlags: 0

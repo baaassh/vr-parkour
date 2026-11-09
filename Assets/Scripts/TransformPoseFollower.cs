@@ -13,6 +13,18 @@ public sealed class TransformPoseFollower : MonoBehaviour
         set => source = value;
     }
 
+    public Vector3 LocalPositionOffset
+    {
+        get => localPositionOffset;
+        set => localPositionOffset = value;
+    }
+
+    public Vector3 LocalRotationOffset
+    {
+        get => localRotationOffset;
+        set => localRotationOffset = value;
+    }
+
     private void Update()
     {
         if (source == null)

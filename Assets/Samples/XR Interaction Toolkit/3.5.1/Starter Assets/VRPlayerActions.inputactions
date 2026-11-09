@@ -15,6 +15,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "BackFlip",
+                    "type": "Button",
+                    "id": "3370c7ea-3503-4a23-bc2c-7ce2c4f06722",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -26,6 +36,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "57ffcc56-e1cc-4e54-af2c-7884ab78bdb1",
+                    "path": "<XRController>{RightHand}/thumbstick/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BackFlip",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

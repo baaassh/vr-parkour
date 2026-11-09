@@ -58,8 +58,12 @@ public static class FullBodyAvatarSetup
         if (movement == null || characterController == null)
             throw new InvalidOperationException("ArmSwingMovement and CharacterController were not found on XR Origin.");
 
-        ConnectFollower(kyle, "LeftHandIKTarget", leftController);
-        ConnectFollower(kyle, "RightHandIKTarget", rightController);
+        var animator = kyle.GetComponent<Animator>();
+        if (animator == null || !animator.isHuman)
+            throw new InvalidOperationException("KyleRobot Animator is not Humanoid.");
+
+        ConnectFollower(kyle, "LeftHandIKTarget", leftController, CalculateHandRotationOffset(animator, true));
+        ConnectFollower(kyle, "RightHandIKTarget", rightController, CalculateHandRotationOffset(animator, false));
 
         var driver = kyle.GetComponent<VRFullBodyAvatar>();
         if (driver == null)
@@ -167,7 +171,8 @@ public static class FullBodyAvatarSetup
 
         var target = GetOrCreateChild(rig, side + "HandIKTarget");
         target.SetPositionAndRotation(hand.position, hand.rotation);
-        GetOrAddComponent<TransformPoseFollower>(target.gameObject);
+        var follower = GetOrAddComponent<TransformPoseFollower>(target.gameObject);
+        follower.LocalRotationOffset = CalculateHandRotationOffset(animator, left);
 
         var hint = GetOrCreateChild(rig, side + "ElbowHint");
         hint.position = lower.position - animator.transform.forward * 0.3f - animator.transform.up * 0.08f;
@@ -214,7 +219,7 @@ public static class FullBodyAvatarSetup
         constraint.weight = 0f;
     }
 
-    private static void ConnectFollower(Transform kyle, string targetName, Transform source)
+    private static void ConnectFollower(Transform kyle, string targetName, Transform source, Vector3 rotationOffset)
     {
         var target = FindDescendant(kyle, targetName);
         var follower = target != null ? target.GetComponent<TransformPoseFollower>() : null;
@@ -223,8 +228,41 @@ public static class FullBodyAvatarSetup
 
         Undo.RecordObject(follower, "Connect tracked controller to hand IK");
         follower.Source = source;
+        follower.LocalRotationOffset = rotationOffset;
         EditorUtility.SetDirty(follower);
         PrefabUtility.RecordPrefabInstancePropertyModifications(follower);
+    }
+
+    private static Vector3 CalculateHandRotationOffset(Animator animator, bool left)
+    {
+        var hand = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+        var index = animator.GetBoneTransform(left ? HumanBodyBones.LeftIndexProximal : HumanBodyBones.RightIndexProximal);
+        var middle = animator.GetBoneTransform(left ? HumanBodyBones.LeftMiddleProximal : HumanBodyBones.RightMiddleProximal);
+        var little = animator.GetBoneTransform(left ? HumanBodyBones.LeftLittleProximal : HumanBodyBones.RightLittleProximal);
+        RequireTransforms(left ? "left hand orientation" : "right hand orientation", hand, index, middle, little);
+
+        var fingerDirection = (middle.position - hand.position).normalized;
+        var acrossHand = (index.position - little.position).normalized;
+        var backOfHand = Vector3.Cross(acrossHand, fingerDirection).normalized;
+        if (Vector3.Dot(backOfHand, animator.transform.up) < 0f)
+            backOfHand = -backOfHand;
+
+        var modelHandBasis = Quaternion.LookRotation(fingerDirection, backOfHand);
+        var boneToHandBasis = Quaternion.Inverse(hand.rotation) * modelHandBasis;
+        var controllerToBone = Quaternion.Inverse(boneToHandBasis);
+        var offset = NormalizeEuler(controllerToBone.eulerAngles);
+        Debug.Log($"[FullBodyAvatarSetup] {(left ? "Left" : "Right")} controller-to-palm rotation offset: {offset}");
+        return offset;
+    }
+
+    private static Vector3 NormalizeEuler(Vector3 euler)
+    {
+        return new Vector3(NormalizeAngle(euler.x), NormalizeAngle(euler.y), NormalizeAngle(euler.z));
+    }
+
+    private static float NormalizeAngle(float angle)
+    {
+        return angle > 180f ? angle - 360f : angle;
     }
 
     private static Transform RequireBone(Animator animator, HumanBodyBones bone, string expectedName)
