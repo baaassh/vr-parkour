@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,6 +6,7 @@ public class BackflipVisuals : MonoBehaviour
 {
     [SerializeField] private float flipDuration = 0.7f;
     [SerializeField] private InputActionReference backflipAction;
+    [SerializeField] private Transform avatar;
 
     private bool isFlipping = false;
     private Quaternion initialRotation;
@@ -22,25 +23,25 @@ public class BackflipVisuals : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("BackflipVisuals ‹N“®¬Œ÷I");
+        Debug.Log("BackflipVisuals èµ·å‹•æˆåŠŸï¼");
     }
 
     void Update()
     {
         if (Time.frameCount % 120 == 0)
         {
-            Debug.Log("BackflipVisuals “®ì’†I");
+            Debug.Log("BackflipVisuals å‹•ä½œä¸­ï¼");
         }
 
         if (backflipAction == null || backflipAction.action == null)
         {
-            Debug.LogWarning("Backflip Action‚ª–¢İ’èI");
+            Debug.LogWarning("Backflip ActionãŒæœªè¨­å®šï¼");
             return;
         }
 
         if (backflipAction.action.WasPressedThisFrame() && !isFlipping)
         {
-            Debug.Log("‰EƒXƒeƒBƒbƒN‰º“ü—Í‚ğŒŸoI");
+            Debug.Log("å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯ä¸‹å…¥åŠ›ã‚’æ¤œå‡ºï¼");
             StartCoroutine(DoBackflip());
         }
     }
@@ -49,18 +50,31 @@ public class BackflipVisuals : MonoBehaviour
     {
         isFlipping = true;
 
-        initialRotation = transform.localRotation;
+        Quaternion initialRotation = transform.localRotation;
         float elapsed = 0f;
+
+        // å›è»¢è»¸ã‚’é–‹å§‹æ™‚ã«å›ºå®šã™ã‚‹
+        Vector3 worldAxis = avatar != null
+            ? avatar.right
+            : transform.right;
+
+        Vector3 localAxis = transform.parent != null
+            ? transform.parent.InverseTransformDirection(worldAxis)
+            : worldAxis;
 
         while (elapsed < flipDuration)
         {
             elapsed += Time.deltaTime;
 
+            // 0ã€œ1ã®é€²è¡Œåº¦
             float t = Mathf.Clamp01(elapsed / flipDuration);
-            float angle = -2520f * t;
+
+            // å¾Œæ–¹ã«360åº¦å›è»¢
+            float angle = -1200f * t;
 
             transform.localRotation =
-                initialRotation * Quaternion.Euler(angle, 0f, 0f);
+                Quaternion.AngleAxis(angle, localAxis)
+                * initialRotation;
 
             yield return null;
         }

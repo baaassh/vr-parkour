@@ -98,7 +98,7 @@ public class ArmSwingMovement : MonoBehaviour
 
 
         bool isRunning = isSwinging;
-        if(isRunning)
+        if(isRunning && isAlternating)
         {
             currentSpeed = Mathf.MoveTowards(currentSpeed, maxSpeed, acceleration * Time.deltaTime);
             if (moveDirection == Vector3.zero) {
